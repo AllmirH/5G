@@ -1,0 +1,20 @@
+//tealium universal tag - utag.sync ut4.0.202006260130, Copyright 2020 Tealium.com Inc. All Rights Reserved.
+try{var isStore=!1;try{isStore=!!window.localStorage&&typeof localStorage.getItem=='function';}catch(ex){}
+var w=window,h=w.decodeURIComponent;function isLg(){try{return isStore&&"1"==(localStorage.getItem("db")||'')+'';}catch(e){}
+return!1;}
+function inIframe(){try{return window.self!==window.top;}catch(n){return!0;}}
+var utl=(function(){function nwMsg(c){return{'ns':'utag','cmd':c||'rd_ck_rs','msg':{'res':{}}};}
+function getcks(){var o={},d=document;if(d.cookie)
+for(var e=d.cookie.split(/; */),c=0,k=(e?e.length:0);c<k;c++){var n=e[c].split("=");n[0]=n[0].replace(/^ /,""),o[h(n[0])]=h(n[1]||"");}
+return o;}
+function getLs(k){var o={};try{if(isStore){var ls=window.localStorage;if(k){o[k]=h(ls.getItem(k)||'');}else{for(var v in ls){Object.prototype.hasOwnProperty.call(ls,v)&&(o[v]=h(ls.getItem(v)||""));}}}}catch(er){}
+return o;}
+function getck(key){return!key?null:h(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*"+encodeURIComponent(key).replace(/[\-\.\+\*]/g,"\\$&")+"\\s*\\=\\s*([^;]*).*$)|^.*$"),"$1"))||null;}
+function getOrg(){var o,d=document;try{var p=h(location.hash.replace(/^#/,""));o=p&&p.replace(/([^:]+:\/\/[^\/]+).*/,"$1");!o&&d.referrer&&(o=d.referrer.replace(/([^:]+:\/\/[^\/]+).*/,"$1"));}catch(e){}
+return o;}
+function isTrusted(o){return/(t-mobile.com|metrobyt-mobile.com|metropcs.com|t-mobilemoney|layer3tv.com|tvision.com|newtmobile.com|sprint.com)/i.test(o);}
+function rcvMsg(evt){try{evt&&(isLg()&&console.log("ifrm rcvMsg() "+evt.origin),evt.origin&&isTrusted(evt.origin)&&prosMsg(evt));}catch(x){isLg()&&console.log("ifrm rcvMsg() err"+x);}}
+function sendMsg(data,cmd,s,n,id){try{if(!inIframe())return;var o;data&&(o=nwMsg(cmd),(cmd&&(o.cmd=cmd)),o.msg.res=data);id&&o&&(o.msg.id=id);s=s||parent;n=n||getOrg();window.postMessage&&s&&s.postMessage(o,n);isLg()&&console.log("ifrm sendMsg to parent"+JSON.stringify((o||''),null,2)+" from url "+location.href);}catch(ex){isLg()&&console.log("ifrm sendMsg() to parent err"+ex);}}
+function prosMsg(evt){try{(function(e){isLg()&&console.log("ifrm prosMsg() data= "+JSON.stringify((e.data||''),null,2));var m=e.data;if(m&&/utag/i.test(m.ns||'')){var r={},p=m.msg&&m.msg.cn?m.msg.cn:null,id=m.msg&&m.msg.id?m.msg.id:'';switch((m.cmd||'').toLowerCase()){case"rd_ck":if(typeof p=='string'){p=="all"?(r[p]=getcks()):(r[p]=getck(p));}else if(p&&p.constructor===Array){for(var i=0,j=p.length;i<j;i++){p[i]&&(r[p[i]]=getck(p[i])||'');}}
+r&&sendMsg(r,'rd_ck_rs',e.source,e.origin,id);break;case"rd_ls":r=getLs(m.cn);r&&sendMsg(r,'rd_ls_rs',e.source,e.origin,id);break;default:break;}}})(evt);}catch(ex){isLg()&&console.log("ifrm prosMsg() err"+ex);}}
+return{rcvMsg:rcvMsg,sendMsg:sendMsg,nwMsg:nwMsg};})();w.addEventListener?w.addEventListener("message",utl.rcvMsg,!1):w.attachEvent&&w.attachEvent("onmessage",utl.rcvMsg);w.onload=function(){try{if(typeof utl!='undefined'){isLg()&&console.log("ifrm is laoded with "+location.href);}}catch(e){isLg()&&console.log("ifrm onload "+e);}};}catch(ex){console.log("iframe html: err "+ex);}

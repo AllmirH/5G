@@ -1,0 +1,106 @@
+function isDntCookieSet() {
+	const value = '; ' + document.cookie;
+	const parts = value.split('; dnt=');
+	if (parts.length >= 2 && parts.pop().split(';').shift() === '1') {
+		return true;
+	}
+	return false;
+}
+function setDntCookie() {
+	const date = new Date();
+	date.setTime(date.getTime() + 365 * 24 * 60 * 60 * 1000);
+	const expires = '; expires=' + date.toUTCString();
+	document.cookie = 'dnt=1' + expires + '; domain=.t-mobile.com; path=/; secure';
+}
+if (navigator.globalPrivacyControl && !isDntCookieSet()) {
+	setDntCookie();
+	window.gpcDNTSet = true;
+}
+const fcomponent = document.querySelector('tmo-digital-footer');
+fcomponent.addEventListener('digitalUnavEvent', function (event) {
+if (event.detail && event.detail.toLowerCase() === "opendnspage") {
+	openDnsPage();
+}
+});
+const hcomponent = document.querySelector('tmo-digital-header');
+hcomponent.addEventListener('digitalUnavEvent', function (event) {
+if (event.detail && event.detail.toLowerCase() === "opendnspage") {
+	openDnsPage();
+}
+});
+function openDnsPage() {
+	let dnsCookieValue = getCookie("dnt");
+	let localDnsValue = "Sell";
+	if (dnsCookieValue === '1') {
+		localDnsValue = 'DoNotSell';
+	}
+	let dnsForm = document.createElement('form');
+	let domain = document.getElementById('dnspagehost').value;
+	dnsForm.style.display = "none";
+	dnsForm.target = 'dnspage';
+	dnsForm.method = 'post';
+	dnsForm.action = document.getElementById('dnspagehost').value;
+
+	let req = {
+		"Brand": "Magenta",
+		"LocaldoNotSellSetting": localDnsValue,
+		"Site": "Sell_Web",
+		"Origin_URL": window.location.origin + window.location.pathname,
+	};
+	let keys = Object.keys(req);
+	keys.forEach(function (key) {
+		let input = document.createElement('input');
+		input.type = 'text';
+		input.name = key;
+		input.value = req[key];
+		dnsForm.appendChild(input);
+
+	});
+	document.body.appendChild(dnsForm);
+	var myPopup = window.open(domain, 'dnspage', 'width=750,height=750,resizeable,scrollbars');
+	dnsForm.submit();
+	document.body.removeChild(dnsForm);
+	console.log("opendnspage_called");
+	return;
+}
+function getCookie(name) {
+	var start = document.cookie.indexOf(name + '=');
+	if (start < 0) return null;
+	start = start + name.length + 1;
+	var end = document.cookie.indexOf(';', start);
+	if (end < 0) end = document.cookie.length;
+	while (document.cookie.charAt(start) == ' ') {
+		start++;
+	}
+	return decodeURIComponent(document.cookie.substring(start, end));
+}
+function isTMOApp() {
+	var userAgent = navigator.userAgent; 
+	return (userAgent && userAgent.toLowerCase().indexOf('applicationversioncode') >= 0);
+}
+
+function isSideCarView() {
+	var url = window.location.href;
+	return (url && url.toLowerCase().indexOf('sidecar=true') >= 0);
+}
+function loadUnav() {
+	const isTMOAPP= isTMOApp();
+	const issideCarView = isSideCarView();
+	const unavHost =document.getElementById("unavRootUrl").value;
+
+	if (!isTMOAPP && !issideCarView && unavHost){
+	
+	const head = document.getElementsByTagName('HEAD')[0];
+	const script = document.createElement('script');
+	const style = document.createElement('link');
+	script.type = 'text/javascript';
+	script.src =`${unavHost}/client/unav.min.js`;
+	style.rel = 'stylesheet';
+	style.type = 'text/css';
+	style.href = `${unavHost}/client/styles.min.css`;
+	head.appendChild(style);
+	head.appendChild(script);
+	
+	}
+}
+loadUnav();

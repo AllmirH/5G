@@ -1,0 +1,461 @@
+(function() {
+  'use strict';
+
+  var globals = typeof global === 'undefined' ? self : global;
+  if (typeof globals.require === 'function') return;
+
+  var modules = {};
+  var cache = {};
+  var aliases = {};
+  var has = {}.hasOwnProperty;
+
+  var expRe = /^\.\.?(\/|$)/;
+  var expand = function(root, name) {
+    var results = [], part;
+    var parts = (expRe.test(name) ? root + '/' + name : name).split('/');
+    for (var i = 0, length = parts.length; i < length; i++) {
+      part = parts[i];
+      if (part === '..') {
+        results.pop();
+      } else if (part !== '.' && part !== '') {
+        results.push(part);
+      }
+    }
+    return results.join('/');
+  };
+
+  var dirname = function(path) {
+    return path.split('/').slice(0, -1).join('/');
+  };
+
+  var localRequire = function(path) {
+    return function expanded(name) {
+      var absolute = expand(dirname(path), name);
+      return globals.require(absolute, path);
+    };
+  };
+
+  var initModule = function(name, definition) {
+    var hot = hmr && hmr.createHot(name);
+    var module = {id: name, exports: {}, hot: hot};
+    cache[name] = module;
+    definition(module.exports, localRequire(name), module);
+    return module.exports;
+  };
+
+  var expandAlias = function(name) {
+    var val = aliases[name];
+    return (val && name !== val) ? expandAlias(val) : name;
+  };
+
+  var _resolve = function(name, dep) {
+    return expandAlias(expand(dirname(name), dep));
+  };
+
+  var require = function(name, loaderPath) {
+    if (loaderPath == null) loaderPath = '/';
+    var path = expandAlias(name);
+
+    if (has.call(cache, path)) return cache[path].exports;
+    if (has.call(modules, path)) return initModule(path, modules[path]);
+
+    throw new Error("Cannot find module '" + name + "' from '" + loaderPath + "'");
+  };
+
+  require.alias = function(from, to) {
+    aliases[to] = from;
+  };
+
+  var extRe = /\.[^.\/]+$/;
+  var indexRe = /\/index(\.[^\/]+)?$/;
+  var addExtensions = function(bundle) {
+    if (extRe.test(bundle)) {
+      var alias = bundle.replace(extRe, '');
+      if (!has.call(aliases, alias) || aliases[alias].replace(extRe, '') === alias + '/index') {
+        aliases[alias] = bundle;
+      }
+    }
+
+    if (indexRe.test(bundle)) {
+      var iAlias = bundle.replace(indexRe, '');
+      if (!has.call(aliases, iAlias)) {
+        aliases[iAlias] = bundle;
+      }
+    }
+  };
+
+  require.register = require.define = function(bundle, fn) {
+    if (bundle && typeof bundle === 'object') {
+      for (var key in bundle) {
+        if (has.call(bundle, key)) {
+          require.register(key, bundle[key]);
+        }
+      }
+    } else {
+      modules[bundle] = fn;
+      delete cache[bundle];
+      addExtensions(bundle);
+    }
+  };
+
+  require.list = function() {
+    var list = [];
+    for (var item in modules) {
+      if (has.call(modules, item)) {
+        list.push(item);
+      }
+    }
+    return list;
+  };
+
+  var hmr = globals._hmr && new globals._hmr(_resolve, require, modules, cache);
+  require._cache = cache;
+  require.hmr = hmr && hmr.wrap;
+  require.brunch = true;
+  globals.require = require;
+})();
+require.register("common/GlobalHelper", function(exports, require, module) {
+"use strict";
+var GlobalHelper;
+(function (GlobalHelper) {
+    var _helperInstance;
+    function init() {
+        _helperInstance = {
+            isLogsOn: function () {
+                try {
+                    if (window.localStorage) {
+                        return window.localStorage && window.localStorage.getItem('sdsat_debug') !== null && window.localStorage.getItem('sdsat_debug') === "true";
+                    }
+                    else {
+                        return window.sessionStorage && window.sessionStorage.getItem('sdsat_debug') !== null && window.sessionStorage.getItem('sdsat_debug') === "true";
+                    }
+                }
+                catch (err) {
+                    return false;
+                }
+            },
+            getLogger: function (logPrefix) {
+                try {
+                    return {
+                        logd: window['console'].log.bind(window['console'].log, '[' + logPrefix + '] '),
+                        loge: window['console'].log.bind(window['console'].log, '[' + logPrefix + '] ')
+                    };
+                }
+                catch (err) {
+                    console.log(err);
+                }
+            }
+        };
+    }
+    GlobalHelper.init = init;
+    function isLogsOn() {
+        return _helperInstance.isLogsOn();
+    }
+    GlobalHelper.isLogsOn = isLogsOn;
+    function getLogger(loggerPrefix) {
+        return _helperInstance.getLogger(loggerPrefix);
+    }
+    GlobalHelper.getLogger = getLogger;
+})(GlobalHelper = exports.GlobalHelper || (exports.GlobalHelper = {}));
+GlobalHelper.init();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = GlobalHelper;
+//# sourceMappingURL=GlobalHelper.js.map
+});
+
+require.register("common/Logger", function(exports, require, module) {
+"use strict";
+var GlobalHelper_1 = require("./GlobalHelper");
+var Logger;
+(function (Logger) {
+    var loggerInstance = GlobalHelper_1.GlobalHelper.getLogger("TAG_MGR");
+    var isLogsOn = GlobalHelper_1.GlobalHelper.isLogsOn();
+    function debug() {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        loggerInstance.logd.apply(loggerInstance, args);
+    }
+    Logger.debug = debug;
+    function error() {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        loggerInstance.loge.apply(loggerInstance, args);
+    }
+    Logger.error = error;
+    function shouldLog() {
+        return isLogsOn;
+    }
+    Logger.shouldLog = shouldLog;
+})(Logger = exports.Logger || (exports.Logger = {}));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = Logger;
+//# sourceMappingURL=Logger.js.map
+});
+
+require.register("common/Utils", function(exports, require, module) {
+"use strict";
+var GoogleTagConfig_1 = require("../config/Google/GoogleTagConfig");
+var Utils;
+(function (Utils) {
+    var config = new GoogleTagConfig_1.GoogleTagConfig();
+    function getCookie(name) {
+        var value = "; " + document.cookie;
+        var parts = value.split("; " + name + "=");
+        if (parts.length == 2) {
+            return parts.pop().split(";").shift();
+        }
+    }
+    Utils.getCookie = getCookie;
+    function deleteCookie(name) {
+        var date = new Date();
+        date.setTime(date.getTime() + (-1 * 24 * 60 * 60 * 1000));
+        document.cookie = name + "=; expires=" + date.toUTCString() + "; path=/";
+    }
+    Utils.deleteCookie = deleteCookie;
+    function setLocalStorageValue(name, value) {
+        try {
+            if (!name || !value) {
+                return;
+            }
+            window.localStorage.setItem(name, JSON.stringify(value));
+        }
+        catch (e) {
+        }
+    }
+    Utils.setLocalStorageValue = setLocalStorageValue;
+    function getLocalStorageValue(name, parseJson, defaultValue) {
+        if (parseJson === void 0) { parseJson = false; }
+        if (defaultValue === void 0) { defaultValue = {}; }
+        try {
+            if (!name) {
+                return defaultValue;
+            }
+            var lsValue = window.localStorage.getItem(name);
+            if (lsValue) {
+                return parseJson ? JSON.parse(lsValue) : lsValue;
+            }
+        }
+        catch (e) {
+        }
+        return defaultValue;
+    }
+    Utils.getLocalStorageValue = getLocalStorageValue;
+    function isStaging(host) {
+        try {
+            return window['_satellite'].settings.isStaging;
+        }
+        catch (e) {
+            return (config.prodHostname.indexOf(host) > -1) ? false : true;
+        }
+    }
+    Utils.isStaging = isStaging;
+    function doNotTrack() {
+        return false;
+    }
+    Utils.doNotTrack = doNotTrack;
+    function getVisitorId() {
+        return window['s'] && window['s'].marketingCloudVisitorID || "";
+    }
+    Utils.getVisitorId = getVisitorId;
+    function LoadGTMScript(gtmID) {
+        window["dataLayer"] = window["dataLayer"] || [];
+        gtag('js', new Date());
+        gtag('config', gtmID, { transport_url: config.transportUrl, 'send_page_view': false, 'language': getPageLanguage() });
+        createDOMElement(config.gtmUrl + "?id=" + gtmID, "gtm_ss");
+    }
+    Utils.LoadGTMScript = LoadGTMScript;
+    function createDOMElement(tagSrc, id) {
+        var tag = document.createElement("script");
+        tag.setAttribute("src", tagSrc);
+        tag.setAttribute("id", id);
+        document.getElementsByTagName('head')[0].appendChild(tag);
+    }
+    Utils.createDOMElement = createDOMElement;
+    function getPageLanguage() {
+        if (window.location.host.indexOf('es.') > -1 || window.location.host.indexOf('hola.') > -1) {
+            return 'es';
+        }
+        return "en";
+    }
+    Utils.getPageLanguage = getPageLanguage;
+    function getUserType() {
+        return "Prospect";
+    }
+    Utils.getUserType = getUserType;
+})(Utils = exports.Utils || (exports.Utils = {}));
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = Utils;
+//# sourceMappingURL=Utils.js.map
+});
+
+require.register("config/Google/GoogleTagConfig", function(exports, require, module) {
+"use strict";
+var GoogleTagConfig = (function () {
+    function GoogleTagConfig() {
+        this.killToggle = "tm";
+        this.transportUrl = 'https://sgtm.t-mobile.com';
+        this.gtmUrl = "https://googletagmanager.com/gtag/js";
+        this.exclusionList = [];
+        this.timeDelay = 2000;
+        this.devProperty = "G-VKH047RCXH";
+        this.prodProperty = "G-SK38WR4SG9";
+        this.eventArray = ['prodView', 'cartAdd', 'cartRemove', 'checkout', 'purchase'];
+        this.prodHostname = ['www.t-mobile.com', 'es.t-mobile.com', 'www.metrobyt-mobile.com', 'hola.metrobyt-mobile.com'];
+        this.devHostname = ['staging.t-mobile.com'];
+        this.varMap = [
+            { varName: 'digitalData.page.pageInfo.pageName', mappedTo: ['pageName'] },
+            { varName: 'digitalData.page.language', mappedTo: ['language'] },
+            { varName: 'sdto.account.segment', mappedTo: ['visitorId'] },
+        ];
+        this.majorVersion = 1;
+        this.minorVersion = 0;
+        this.subMinorVersion = 0;
+        this.brandKey = "T-Mobile";
+        this.pageLoadEvent = "DOMContentLoaded1";
+    }
+    return GoogleTagConfig;
+}());
+exports.GoogleTagConfig = GoogleTagConfig;
+//# sourceMappingURL=GoogleTagConfig.js.map
+});
+
+;require.register("google.libs.js", function(exports, require, module) {
+window.dataLayer = window.dataLayer || [];
+function gtag() { dataLayer.push(arguments); }
+window.gtag = gtag;
+});
+
+require.register("sprint-tag-manager", function(exports, require, module) {
+"use strict";
+var GoogleTagConfig_1 = require("./config/Google/GoogleTagConfig");
+var tag_manager_impl_1 = require("./tag-manager-impl");
+var SprintTagManager = (function () {
+    function SprintTagManager() {
+    }
+    SprintTagManager.prototype.run = function () {
+        this.config = new GoogleTagConfig_1.GoogleTagConfig();
+        this.tagManagerInstance = tag_manager_impl_1.TagManagerImpl.getInstance(this.config);
+        this.tagManagerInstance.start();
+    };
+    return SprintTagManager;
+}());
+exports.SprintTagManager = SprintTagManager;
+var inst = new SprintTagManager();
+inst.run();
+//# sourceMappingURL=sprint-tag-manager.js.map
+});
+
+require.register("tag-manager-impl", function(exports, require, module) {
+"use strict";
+var Logger_1 = require("./common/Logger");
+var Utils_1 = require("./common/Utils");
+var GoogleTagConfig_1 = require("./config/Google/GoogleTagConfig");
+require("./google.libs.js");
+var TagManagerImpl = (function () {
+    function TagManagerImpl(config) {
+        this._satellite = window['_satellite'];
+        this.executionStartTime = performance.now();
+        Logger_1.default.debug('Starting Tag Manager');
+        this.config = config;
+        this.isStaging = Utils_1.default.isStaging(location.hostname);
+    }
+    TagManagerImpl.prototype.start = function () {
+        this.gtmProperty = this.isStaging ? this.config.devProperty : this.config.prodProperty;
+        Logger_1.default.debug('Running Tag Manager for :: ' + this.config.brandKey + ', Property ID :: ' + this.gtmProperty);
+        if (this.triggerTM()) {
+            this.delayExecuteTagManager();
+            window.addEventListener(this.config.pageLoadEvent, function (execute) {
+                Logger_1.default.debug(this.config.pageLoadEvent);
+                execute();
+            }.bind(this, this.delayExecuteTagManager.bind(this)));
+        }
+        else {
+            Logger_1.default.debug('Tag manager is disabled');
+        }
+    };
+    TagManagerImpl.prototype.triggerTM = function () {
+        this.tmFlag = this.config.killToggle;
+        this.dntFlag = Utils_1.default.doNotTrack();
+        Logger_1.default.debug('Tag Manager Execution flag = ' + this.tmFlag + ' ; IsStaging = ' + this.isStaging);
+        return this.config.prodHostname.indexOf(location.hostname) > -1 ? true : false;
+    };
+    TagManagerImpl.getInstance = function (config) {
+        return new TagManagerImpl(new GoogleTagConfig_1.GoogleTagConfig);
+    };
+    TagManagerImpl.prototype.delayExecuteTagManager = function () {
+        var _this = this;
+        Logger_1.default.debug("Delaying Tag Manager by default of", this.config.timeDelay + " milliseconds");
+        window.setTimeout(function () { _this.executeTagManager(); }, this.config.timeDelay);
+    };
+    TagManagerImpl.prototype.executeTagManager = function () {
+        try {
+            Utils_1.default.LoadGTMScript(this.gtmProperty);
+            this.pageLang = Utils_1.default.getPageLanguage();
+            this.isStaging = Utils_1.default.isStaging(location.hostname);
+            window['tagAnalytics'] = {
+                executionTime: 0,
+                language: this.pageLang,
+                message: [],
+                pageUrl: window.location.href,
+                isStaging: this.isStaging,
+            };
+            if (this.config.exclusionList.length > 0 || this.config.exclusionList.indexOf(this.pageName) > -1) {
+                this.pushMessage('Skipped page: ' + (this.pageName ? this.pageName : location.href));
+                return;
+            }
+            Logger_1.default.debug('Starting Tag Processing');
+            this.processGooglePageLoad();
+            this.executionEndTime = performance.now();
+            Logger_1.default.debug('Elapsed Time: ', window['tagAnalytics'].executionTime = Math.round(this.executionEndTime - this.executionStartTime));
+            Logger_1.default.debug('Fired tags ', window['tagAnalytics']);
+            if (window['__helper']) {
+                window['__helper'].triggerEvent('tagFireFinished', JSON.stringify(window['tagAnalytics']));
+            }
+        }
+        catch (e) {
+            this.pushMessage('Error in executeTagManager: ' + e);
+        }
+        Logger_1.default.debug("Tag Manager finished");
+    };
+    TagManagerImpl.prototype.processGooglePageLoad = function () {
+        try {
+            gtag('event', 'page_view', {
+                'pageName': '',
+                'visitorID': Utils_1.default.getVisitorId(),
+                'userType': Utils_1.default.getUserType()
+            });
+        }
+        catch (e) {
+            this.pushMessage('Error in processGooglePageLoad:' + e);
+        }
+    };
+    TagManagerImpl.prototype.processeCommerceEvents = function () {
+        try {
+            window.gtag('js', new Date());
+        }
+        catch (e) {
+            this.pushMessage('Error in processeCommerceEvents:' + e);
+        }
+    };
+    TagManagerImpl.prototype.pushMessage = function (message, TID) {
+        try {
+            Logger_1.default.debug(message);
+            if (!TID) {
+                window['tagAnalytics'].message.push(message);
+            }
+            return message;
+        }
+        catch (e) { }
+    };
+    return TagManagerImpl;
+}());
+exports.TagManagerImpl = TagManagerImpl;
+//# sourceMappingURL=tag-manager-impl.js.map
+});
+
+;require('sprint-tag-manager');
+//# sourceMappingURL=tag-manager.js.map

@@ -1,0 +1,261 @@
+ $(document).on('ready', function() {
+
+     window.CDNUrl = "//s.tmocache.com";
+     document.cookie = "TMobileSpanish=IsSpanishUser=false;path=/;domain=t-mobile.com;";
+     $(window).load(function() {
+         var cookieEnabled = (navigator.cookieEnabled) ? true : false
+         if ((typeof navigator.cookieEnabled == "undefined") && (!cookieEnabled)) {
+             document.cookie = "testcookie"
+             cookieEnabled = (document.cookie.indexOf("testcookie") != -1) ? true : false
+         }
+         if (!cookieEnabled) {
+             $('#cookieVisitAlert').removeClass("hidden");
+
+         }
+
+     });
+
+     var MP = {
+         <!-- mp_trans_disable_start --> 
+         Version: '1.0.23',
+         Domains: { 'es': 'es.t-mobile.com' },
+         SrcLang: 'en',
+         <!-- mp_trans_disable_end -->
+         UrlLang: 'mp_js_current_lang',
+         SrcUrl: decodeURIComponent('mp_js_orgin_url'),
+         <!-- mp_trans_disable_start -->     
+         init: function() {
+             if (MP.UrlLang.indexOf('p_js_') == 1) {
+                 MP.SrcUrl = window.top.document.location.href;
+                 MP.UrlLang = MP.SrcLang;
+             }
+         },
+         getCookie: function(name) {
+             var start = document.cookie.indexOf(name + '=');
+             if (start < 0) return null;
+             start = start + name.length + 1;
+             var end = document.cookie.indexOf(';', start);
+             if (end < 0) end = document.cookie.length;
+             while (document.cookie.charAt(start) == ' ') { start++; }
+             return decodeURIComponent(document.cookie.substring(start, end));
+         },
+         setCookie: function(name, value, path, domain) {
+             var cookie = name + '=' + encodeURIComponent(value);
+             if (path) cookie += '; path=' + path;
+             if (domain) cookie += '; domain=' + domain;
+             var now = new Date();
+             now.setTime(now.getTime() + 1000 * 60 * 60 * 24 * 365);
+             cookie += '; expires=' + now.toUTCString();
+             document.cookie = cookie;
+         },
+         switchLanguage: function(lang) {
+             if (lang != MP.SrcLang) {
+                 var script = document.createElement('SCRIPT');
+                 script.src = location.protocol + '//' + MP.Domains[lang] + '/' + MP.SrcLang + lang + '/?1023749632;' + encodeURIComponent(MP.SrcUrl);
+                 document.body.appendChild(script);
+             } else if (lang == MP.SrcLang && MP.UrlLang != MP.SrcLang) {
+                 var script = document.createElement('SCRIPT');
+                 script.src = location.protocol + '//' + MP.Domains[MP.UrlLang] + '/' + MP.SrcLang + MP.UrlLang + '/?1023749634;' + encodeURIComponent(location.href);
+                 document.body.appendChild(script);
+             }
+             return false;
+         },
+         switchToLang: function(url) {
+                 window.top.location.href = url;
+             }
+             <!-- mp_trans_disable_end -->   
+     };
+                //Custom methods for getting/setting cookie//
+                function setCookie(cname,cvalue,exdays) {
+                    var d = new Date();
+                    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+                    var expires = "expires=" + d.toGMTString();
+					document.cookie = cname+"="+cvalue+"; "+expires;
+                }
+                
+                function getCookie(cname) {
+                    var name = cname + "=";
+                    var ca = document.cookie.split(';');
+                    for(var i=0; i<ca.length; i++) {
+                        var c = ca[i];
+                        while (c.charAt(0)==' ') {
+                            c = c.substring(1);
+                        }
+                        if (c.indexOf(name) == 0) {
+                            return c.substring(name.length, c.length);
+                        }
+                    }
+                    return "";
+                }
+//End//
+                     var config = $.cookie = function(key, value, options) {
+                 if (value !== undefined) {
+                     options = $.extend({}, config.defaults, options);
+                     if (value === null) {
+                         options.expires = -1
+                     }
+                     if (typeof options.expires === "number") {
+                         var days = options.expires,
+                         t = new Date();
+                         options.expires = new Date();
+                         t.setDate(t.getDate() + days)
+                     }
+                     value = config.json ? JSON.stringify(value) : String(value);
+                     return (document.cookie = [encodeURIComponent(key), "=", config.raw ? value : encodeURIComponent(value), options.expires ? "; expires=" + options.expires.toUTCString() : "", options.path ? "; path=" + options.path : "", options.domain ? "; domain=" + options.domain : "", options.secure ? "; secure" : ""].join(""))
+                 }
+                 if (!decoded) {
+                  var decoded = function() {};   
+                 }
+                 var decode = config.raw ? raw : decoded;
+                 var cookies = document.cookie.split("; ");
+                 var result = key ? null : {};
+                 for (var i = 0, l = cookies.length; i < l; i++) {
+                     var parts = cookies[i].split("=");
+                     var name = decode(parts.shift());
+                     var cookie = decode(parts.join("="));
+                     if (key && key === name) {
+                         result = fromJSON(cookie);
+                         break
+                     }
+                     if (!key) {
+                         result[name] = fromJSON(cookie)
+                     }
+                 }
+                 return result
+             };
+			 
+			 $('body ').on('click','.sub-navbar .container', function(e){
+              if ($(window).width() <= 723) {
+                   $(".nav .glyph-more-items").removeClass("active");
+                   $(".sub-navbar .container").addClass("hidden");
+               }
+             });
+			 
+			 $('body ').on('click','.nav .glyph-more-items', function(e){
+                if($(".nav .glyph-more-items").hasClass("active")) {                                                       
+                   $(".nav .glyph-more-items").removeClass("active"); 
+                   $(".sub-navbar .container").addClass("hidden"); 
+                }else{
+                   $(".nav .glyph-more-items").addClass("active"); 
+                   $(".sub-navbar .container").removeClass("hidden"); 
+                }
+            });
+
+             $('body').on('click','.nav .glyphsearch', function(e){
+
+                 if($(".nav .glyphsearch").hasClass("active")) {
+                     $(".nav .glyphsearch").removeClass("active");
+                     $(".sub-navbar .container").addClass("hidden");
+                     $(".sub-navbar .container .subnav-search").addClass("hidden");
+                 }else{
+                     $(".nav .glyphsearch").addClass("active");
+                     $(".sub-navbar .container").removeClass("hidden");
+                     $(".sub-navbar .container .subnav-search").removeClass("hidden");
+                 }
+             });
+
+
+			 
+			 $('body ').on('click','.overlay-search  .close', function(e){
+                  $(".overlay-search").removeClass("open"); 
+                   $(".mute-screen").removeClass("on"); 
+            });
+
+             $('body ').on('click','.menu-left-shop-list a', function(e){
+                 if($(this).closest('.subnav').attr("class")){
+                 var classesL2 = $(this).closest('.subnav').attr("class").split(" ");
+                 for (var i = 0; i < classesL2.length; i++) {
+                     if (classesL2[i].indexOf("subnav-") > -1) {
+                         var nodeType = classesL2[i].substring(7, classesL2[i].length);
+                         if(e.originalEvent != null && e.originalEvent.type == "click")
+                         setCookie("clickedL1", nodeType, "100")
+                     }
+                   }
+                }
+             });
+             $('body ').on('click','.tab-content a', function(e){
+                if($(this).closest('.subnav').attr("class")){
+                 var classesL2 = $(this).closest('.subnav').attr("class").split(" ");
+                 for (var i = 0; i < classesL2.length; i++) {
+                     if (classesL2[i].indexOf("subnav-") > -1) {
+                         var nodeType = classesL2[i].substring(7, classesL2[i].length);
+                         if(e.originalEvent != null && e.originalEvent.type == "click")
+                         setCookie("clickedL1", nodeType, "100") // to be replaced with Clover.navigation.storeLocatorCookieOptions
+                     }
+                   }   
+                } 
+             });
+
+
+             function setActiveMenu(){
+                 var counter = 0;
+                                  $(".mainnav li a").each(function() {
+                              if (typeof(Storage) !== "undefined") {
+                                  if (getCookie("clickedL1") != null) {
+                                      if ($(this).attr("data-subnav") == getCookie("clickedL1")) {
+                                          $(".mainnav li a").removeAttr("style");
+                                          $(".mainnav li a").removeClass("activeMenuItem");
+                                          $(this).addClass("activeMenuItem");
+                                          $(".mainnav").css("padding-bottom", "3px")
+                                      }
+                                  }
+                              }
+                              if ($(this).css("border-bottom")) {
+                                  counter++
+                              }
+                          });
+                          if (counter == 0) {
+                              $(".mainnav").removeAttr("style")
+                          }
+                 clearInterval(timerId);
+                 }
+			var timerId = setInterval(function(){ 
+				if($('.mainnav li a').length > 0){
+                    console.log('mainnav >>>>>>', $('.mainnav li a').length)
+               		 setActiveMenu();
+                }
+            }, 100);
+
+ });
+
+(function (angular, lodash, ADRUM, externalLogger) {
+  'use strict';
+
+  if (window.skipTmobileAppBootstrap) {
+    return false;
+  }
+
+  angular.element(document).ready(function () {
+    if (!angular.isUndefined(ADRUM) && typeof (ADRUM) !== "") {
+      ADRUM.ng.ngMonitor.init();
+    }
+    else {
+      console.log("Error in intializing Adrum for angular");
+    }
+
+    externalLogger.info('%c -- bootstrap "tmobileApp" -- ', externalLogger.css.boldGreyOnYellow);
+
+    angular.bootstrap(document, ['tmobileApp']);
+  });
+
+})(window.angular, window._, window.ADRUM, window.externalLogger);
+
+(function(angular) {
+  'use strict';
+
+  angular
+      .module('tmobileCore')
+      .constant('globalConfig', {"versions":{"sessionVersion":"2.5"},"cookieOption":{"domain":".t-mobile.com"},"pdl":{},"noUnavStates":["myCart","checkOut"],"outagePageURL":"/content/t-mobile/SystemOutage.html","cartSettings":{"epToAppMapping":{"GOOD":"creditClass1","BUILDING":"creditClass2","NONE":"creditClass3"},"enableCartBackgroundProcess":false,"showTMONotifications":false,"isEmptyCartEnabled":true,"showPlanOptions":false,"enablePromotions":false,"isRylothCartEnabled":true,"line":{"device":{"showPromotion":"show"},"plan":{"addOns":{"showHighSpeedData":"show","highSpeedPlanCode":"UNLIMITEDPLUS"}},"service":{"phpServiceName":"Premium Handset Protection"}},"creditClassSelector":{"hideCreditClass3":"hide"},"showPromotion":"show","miniPDP":{"showPromotion":"show"},"miniBrowse":{"hideOfferBagde":""},"maxLineLimit":{"creditClass1":{"maxTotalLine":5,"maxHandsetLine":5,"maxTabletLine":5},"creditClass2":{"maxTotalLine":5,"maxHandsetLine":5,"maxTabletLine":5},"creditClass3":{"maxTotalLine":5,"maxHandsetLine":5,"maxTabletLine":5}},"constants":{"familyId":"FAMILY_ID_CHANGED","skuId":"SKU_ID_CHANGED","mockSKUs":{"addNewLine":"00000000003","addDeviceToFirstLine":"888462500432","addDeviceToSecondLine":"888462500371","addOneServiceToFirstLine":"LISTEN5","defaultCartCreditLevel":"GOOD","defaultCartId":"TMOB1234"},"onlyAccessoryCreditClass":{"class":"creditClass1","label":"AWESOME CREDIT","pricing_popup_text":"<p>Tmo Expert Banner TExt</p>\n","enable":"true","description":"You've got seller credit."},"modalSource":{"IMEIModal":"IMEI","CheckCompatibilityModal":"CCM"}},"removeServiceInEditDevice":"FAMILY_ID_CHANGED","enableCreateDefaultPlan":true,"enablePlanSelector":true,"planListSize":5,"delayInLoadCartInBackground":100,"orderStatusOrder":{"AVAILABLE_FOR_BACK_ORDER":{"orderGroup":0,"orderDisplay":"Back Order"},"AVAILABLE_FOR_PRE_ORDER":{"orderGroup":1,"orderDisplay":"Pre Order"},"AVAILABLE":{"orderGroup":2,"orderDisplay":"Your Order"}},"cartBackgroundProcess":{"delayDefaultSimKit":5000,"delayLoadCheckOutJson":5000,"delayAccessoryMiniBrowseDetails":1000,"delayTabletMiniBrowseDetails":1000,"delayDeviceMiniBrowseDetails":1000,"delayTradeInDevice":200}},"enableAuthorValueCall":true,"authorValueFlagEnable":true,"ignore":{"authorValueUrls":["/bot-shopping/:type?:skuId=&:fbId=&:psId="],"uuidHosts":["api.t-mobile.com","es.api.t-mobile.com","login.salesforce.com","api.chatfuel.com","core.saas.api.t-mobile.com","www.t-mobile.com","edge.api.brightcove.com","tmobile.bootstrap.fyre.co","t-mobile.7eer.net","onmyj41p3c.execute-api.us-west-2.amazonaws.com","www.layer3tv.com","tos-shop-dev.stg.kube.t-mobile.com","join.t-mobile.com","eos.ccp.t-mobile.com","t-mobile.com"]},"authorValueExtension":".html","authorValueUrlMap":[{"url":"/opt-out","authorValueUrl":"/content/t-mobile/privacy-policy/optout.html"},{"url":"/store-locator/{state}/{city}/{storeName}/{operation}?filterBy&sortBy&page&search&additionalUrl&appointment_Id&filter&Confirmation&RSVPConfirmation&Reschedule&Cancel","authorValueUrl":"/content/t-mobile/store-authoring.html"},{"url":"/store-locator","authorValueUrl":"/content/t-mobile/store-authoring.html"},{"url":"/cart/:type?:key=&:id=&:fbId=&:psId=","authorValueUrl":"/content/t-mobile/smartcartdialog.html"},{"url":"/plan","authorValueUrl":"/content/t-mobile/planstouch.html"},{"url":"/cart","authorValueUrl":"/content/t-mobile/smartcartdialog.html"},{"url":"/checkout","authorValueUrl":"/content/t-mobile/checkout.html"},{"url":"/checkout/hard-stop","authorValueUrl":"/content/t-mobile/checkout.html"},{"browseCategory":{"cell-phones":"/content/t-mobile/cell-phones","accessories":"/content/t-mobile/accessories","internet-devices":"/content/t-mobile/internet-devices","wearables":"/content/t-mobile/wearables"}},{"detailCategory":{"cell-phones":"/content/t-mobile/cell-phones","accessories":"/content/t-mobile/accessories","internet-devices":"/content/t-mobile/internet-devices","wearables":"/content/t-mobile/wearables","cell-phone":"/content/t-mobile/cell-phones","accessory":"/content/t-mobile/accessories","internet-device":"/content/t-mobile/internet-devices","wearable":"/content/t-mobile/wearables"}}],"authorValueSingleQuoteAttrs":["multitermdesc"],"allowedLogLevels":["error"],"httpCacheConfig":{"enableCache":true,"expireInMilliSeconds":23,"cacheUrls":[{"url":"bin/faqs","expireInMs":232,"version":1.1},{"url":"app/productDetails/productDetails.html","expireInMs":60000000223200,"version":1.1},{"url":"api/smartcartkeyvalues1","expireInMs":60000000223200,"version":1}]},"errorStates":{"OK":[{"message":"This is the testing error message 1","functionality":"cartinfo","authorValueKey":"page.simKitText"},{"message":"This is the testing error message 1","functionality":"personalinfo","authorValueKey":"page.simKitText"},{"message":"This is the testing error message 1","functionality":"checkoutinfo","authorValueKey":"page.simKitText"}],"OK2":[{"message":"This is the testing error message 1","functionality":"cartinfo","authorValueKey":"cart.error.2311"},{"message":"This is the testing error message 1","functionality":"personalinfo","authorValueKey":"cart.error.2311"}]},"progressBar":{"spinnerTemplate":"<div class='screen-lock'><div class='spinner'><i class='fa fa-spinner fa-pulse'></i></div></div>","includeBar":false,"includeSpinner":true},"dataCacheServices":{"defaultService":{"serviceName":"DefaultService","storageOption":"memory"},"defaultSessionService":{"serviceName":"DefaultSessionService","storageOption":"sessionStorage","expireInMs":6000000},"miniBrowseDevice":{"serviceName":"miniBrowseDeviceService","storageOption":"memory"},"miniPDPDevice":{"serviceName":"miniPDPDeviceService","storageOption":"memory"},"serviceDefinitionService":{"serviceName":"serviceDefinitionService","storageOption":"sessionStorage"},"planSelectorService":{"serviceName":"planSelectorHttpDataService","storageOption":"sessionStorage"},"authorValueFactory":{"serviceName":"authorValueHttpDataFactory","storageOption":"memory"},"defaultSimKitService":{"serviceName":"defaultSimKitHttpDataService","storageOption":"sessionStorage"},"miniBrowseAccessory":{"serviceName":"cartAccessoryService","storageOption":"memory"},"miniPDPAccessory":{"serviceName":"cartAccessoryService","storageOption":"memory"},"tradeInDevice":{"serviceName":"tradeInDeviceService","storageOption":"localStorage","expireInMs":6000000},"miniBrowseAccessories":{"serviceName":"accessoriesService","storageOption":"localStorage"},"miniPDPAccessories":{"serviceName":"accessoriesService","storageOption":"localStorage"},"globalPDPService":{"serviceName":"devicePDPService","storageOption":"localStorage"},"essentialsService":{"serviceName":"essentialsService","storageOption":"sessionStorage"},"postPlanToLine":{"serviceName":"postPlanToLine","storageOption":"sessionStorage"}},"credentials":{"global":{"grant_type":"client_credentials","client_id":"hV6lfg3EBAiVX5EZjbpexLoLhGhuGiWR"},"global_v2":{"grantType":"client_credentials","clientId":"hV6lfg3EBAiVX5EZjbpexLoLhGhuGiWR","role":"PUBLIC","scope":"raptor","content_type":{"json":"application/json"}},"payment":"27f2PVN2WWKO3z7mqLVAktluIPKAhXdV:tru3AafxOblhugF9","chatfuel_query_params":{"chatfuel_token":"vnbqX6cpvXUXFcOKr5RHJ7psSpHDRzO1hXBY8dkvn50ZkZyWML3YdtoCnKH7FSjC","chatfuel_block_id":"58f78e68e4b0cd816d879a21","order_confirm_status":"success","message-text":"ordersucess"},"selligentServletParams":{"userData":{"Name":"<user_provided_name>","Mail":"<user_provided_email>","SUBSCRIBE_SOURCE":"Web","OPT_IN":1,"CUSTOMER":0,"FIRST_NAME":"<user_provided_first_name>"},"campaignData":{"ACTIONCODE":"ORDERCONF","SUBSCRIBE_SOURCE":"TEST_SOURCE","LEAD_CAPTURE_LOCATION":"https://www.t-mobile.com/checkout","MARKETING_PROGRAM":"Consumer","IPADDRESS":"207.109.67.66","CREDIT_SELECTION":"creditClass1","FINANCING_TYPE":"FRP","SUBMISSION_TIME":"ON"}},"zipWhip":{"id":"Basic","username":"hV6lfg3EBAiVX5EZjbpexLoLhGhuGiWR","password":"pA1VJ65UDE0sAUgT"},"jwt":{"grant_type":"client_credentials","consumer_key":"hV6lfg3EBAiVX5EZjbpexLoLhGhuGiWR","consumer_secret":"pA1VJ65UDE0sAUgT"},"roaming":{"application":"WebTravelTools","consumer_type":"RealTime"},"international_calling":{"content_type":"application/json","consumer_type":"1","application":"1"}}})
+
+      .constant('apiURLs', {"syncUpDevices":"https://tmobile-us-segment-proxy.moj.io/vehicles/v3","syncUpCompatability":"https://tmobile-us-segment-proxy.moj.io/vehicle-compatibility/v4","spatialPoint":"https://www.t-mobile.com/srvspub/storelocsearch?start={{start}}&dist={{miles}}&count={{count}}&latcentre={{lat}}&lngcentre={{lng}}","blueJet":"https://www.t-mobile.com/Services/Activation/ActivationService.svc/StoresWaitTime/","reasons":"https://www.t-mobile.com/Services/Activation/ActivationService.svc/Reasons","addCustomer":"https://www.t-mobile.com/Services/Activation/ActivationService.svc/AddCustomer","pccMap":"https://maps.t-mobile.com/stores.html?map=tmo-store","storeLocationStaticMap":"https://maps.googleapis.com/maps/api/staticmap?&size=300x200&maptype=roadmap&markers=color:blue%7Clabel:S%7C{{lat}},{{lng}}&id=gme-tmobileusa3","storeLocator":{"search":"https://onmyj41p3c.execute-api.us-west-2.amazonaws.com/prod/v2.1/getStoresByCoordinates","stateSearch":"https://onmyj41p3c.execute-api.us-west-2.amazonaws.com/prod/v2.1/getStoresInState","citySearch":"https://onmyj41p3c.execute-api.us-west-2.amazonaws.com/prod/v2.1/getStoresInCity","storeSearch":"https://onmyj41p3c.execute-api.us-west-2.amazonaws.com/prod/v2.1/getStoreByName","getStoreById":"https://onmyj41p3c.execute-api.us-west-2.amazonaws.com/prod/v2.1/getStoreById?storeId={{storeId}}","storeEvents":"https://onmyj41p3c.execute-api.us-west-2.amazonaws.com/prod/v2.1/get-special-store-events","getInLineReasons":"https://onmyj41p3c.execute-api.us-west-2.amazonaws.com/prod/v2.1/getReasons","getReasonsForVisitByStoreId":"https://api.t-mobile.com/store-services/v1/queue/get-reasons-for-visit","queueInLine":"https://api.t-mobile.com/store-services/v1/queue/in-line","addCustomerV2":"https://api.t-mobile.com/add-customer/v1/addCustomer","createLead":"https://api.t-mobile.com/customer-interaction/v1/create-lead","getLeadInfo":"https://api.t-mobile.com/customer-interaction/v1/get-lead?leadId={{leadId}}","myAppointments":"https://api.t-mobile.com/customer-interaction/v1/appointment/myappointments?leadId={{leadId}}","availableTimeSlotsForAppointment":"https://api.t-mobile.com/customer-interaction/v1/appointment/available","storesWithAppointment":"https://api.t-mobile.com/customer-interaction/v1/appointment/eligibilitylist","scheduleAppointment":"https://api.t-mobile.com/customer-interaction/v1/appointment/schedule","rescheduleAppointment":"https://api.t-mobile.com/customer-interaction/v1/appointment/reschedule","cancelAppointment":"https://api.t-mobile.com/customer-interaction/v1/appointment/cancel","reasonsForAppointmentAndCancel":"https://api.t-mobile.com/customer-interaction/v1/appointment/reasonlist?metaType=appointmentreasonlist&argList={{form}}","addToCalendar":"/config/icalendar?startDate={{startDate}}&endDate={{endDate}}&location={{location}}&description={{description}}&summary={{title}}"},"marketingLazerShark":{"addressValidation":"https://core.saas.api.t-mobile.com/common/v1/addresses","lsEmailVerification":"https://core.saas.api.t-mobile.com/customer-identity/v1/customer-emails/email-address","lsExistingCustomerVerification":"https://core.saas.api.t-mobile.com/customer-identity/v2/cross-company-customers/existing-customer-search","lsEligibilityServlet":"/bin/eligibility","lsOrderSubmit":"/bin/orderSubmit","addressEligibilitySearch":"https://core.saas.api.t-mobile.com/customer-identity/v1/customer-addresses/address","eligibilitySubmitOrder":"https://api.t-mobile.com/shop/test-drive/v1/eligibility-submitorder","updateOrder":"https://api.t-mobile.com/shop/test-drive/v1/order"},"seoDataUpdate":"/srvspub/seoDataUpdate","getSeoData":"/srvspub/filterSeoService.json","contactFormData":"/srvspub/contactForm.json","universalConsumerMenu":"/srvspub/navigation.consumer.json","universalBusinessMenu":"/srvspub/navigation.business.json","faqData":"bin/faqs?action=PDPFAQ&tags=","reviewOrder":"/content/t-mobile/jcr:content.reviewOrder.json","versionID":"/bin/getCheckOut?versionid","keyValuePairs":"/bin/getSmartCart.json","loggingSettings":"api/settings","logging":"https://api.t-mobile.com/v1/logs","authorValue":"/bin/authorvalue","accessoriesData":"/content/t-mobile/jcr:content.AccessoriesImages.json","product":{"stage":"http://stage.sp10050e1e.guided.ss-omtrdc.net","host":"https://api.t-mobile.com/raptor/v1","browse":{"service":"/search-promote/","parameters":{"phone":"?type=browse&ps=handset","accessory":"?type=browse&pt=accessory","internet-device":"?type=browse&ps=internet-device"},"failSafeParametersMain":{"phone":"/srvspub/browse.main.cell-phones.json","accessory":"/srvspub/browse.main.accessories.json","internet-device":"/srvspub/browse.main.internet-devices.json"},"failSafeParametersMini":{"phone":"/srvspub/browse.mini.cell-phones.json","accessory":"/srvspub/browse.mini.accessories.json","internet-device":"/srvspub/browse.mini.internet-devices.json"}},"detail":{"service":"/productDetails","pdpCacheData":{"phone":"/srvspub/productDetailsCache.cell-phones.{offerId}.pdp.json","accessory":"/srvspub/productDetailsCache.accessories.{offerId}.pdp.json","internet-device":"/srvspub/productDetailsCache.internet-devices.{offerId}.pdp.json"}}},"productv2":{"browse":{"failSafeParametersMain":{"phone":"/srvspub/browse.mainV2.cell-phones.json","accessory":"/srvspub/browse.mainV2.accessories.json","internet-device":"/srvspub/browse.mainV2.internet-devices.json"}}},"snpMiniBrowse":"https://api.t-mobile.com/raptor/v1/productDetails/","snpMiniBrowse2":"https://api.t-mobile.com/v2/products/","FRP":"NONE","CRP1":"BUILDING","CRP8":"GOOD","CRP6":"BUILDING","CRP3":"BUILDING","offerID":["i-6ED34DE808594435BC3997C4EC8B1B2B"],"storage":"localStorage","cart":{},"checkOut":{},"unavMenuData":"/srvspub/ngunavService.json","unavMenuDataBusiness":"/srvspub/ngunavService.business.json","createCart":"/api/createCart","mostPopularDevices":"https://api.t-mobile.com/raptor/v1/search-promote/?type=browse&","sourceMpelFile":"https://tmobilees.mpeasylink.com/mpel/mpel.js","enableLocalization":"true","updateCart":"/api/updateCart","protectionPlan":"api/protection","accessories":"https://api.t-mobile.com/raptor/v1/search-promote/?type=browse&pt=Accessory&o=","authorization":"https://api.t-mobile.com/oauth/v1/access","authorizationV2API":"https://api.t-mobile.com/v2/tokens","authorizationHAPI":"https://www.t-mobile.com/shop/api/oauth","creditCardInfo":"https://api.t-mobile.com/creditcards/orders","submitOrderUrl":"https://api.t-mobile.com/carts/v1/orders/submit","createAuditRecordsUrl":"https://api.t-mobile.com/v1/carts/{{cartID}}/audit-records","checkoutSetAddress":"https://api.t-mobile.com/v1/orders/{{orderID}}/address","updateProfile":"https://api.t-mobile.com/raptor/v1/update-profile","getProfile":"https://api.t-mobile.com/v1/profile","getProfilesV2":"https://api.t-mobile.com/v2/profiles","checkoutSetEmail":"https://api.t-mobile.com/commerce/emails/raptor?followlocation","ShippingOrderFees":"https://api.t-mobile.com/raptor/v1/order/fees","creditcheckUrl":"https://api.t-mobile.com/v1/orders/creditcheck/","creditcardUrl":"https://api.t-mobile.com/v1/orders/creditcards/","productBrowseDetailsLive":"https://api.t-mobile.com/raptor/v1/search-promote/?type=browse&pt=Device&ps=Handset","accessoryBrowseDetailsLive":"https://api.t-mobile.com/raptor/v1/search-promote/?type=browse&pt=Accessory","internetBrowseDetailsLive":"https://api.t-mobile.com/raptor/v1/search-promote/?type=browse&ps=Wearable|Tablet|Sims|Hotspots","productLookup":"https://api.t-mobile.com/commerce/lookups/raptor/items?followlocation","planDetails":"https://api.t-mobile.com/commerce/lookups/raptor/items","useMyPhone":"https://api.t-mobile.com/raptor/v1/productDetails/i-21225F913860490989C4738E867119BB?followlocation","useMyTablet":"https://api.t-mobile.com/raptor/v1/productDetails/i-DC14CC31D84F4BB7A9547DB4DDD19DF8?followlocation","useMyPhoneV2":"https://api.t-mobile.com/v2/products/i-21225F913860490989C4738E867119BB","useMyTabletV2":"https://api.t-mobile.com/v2/products/i-DC14CC31D84F4BB7A9547DB4DDD19DF8","shippingOptionsUrl":"https://api.t-mobile.com/raptor/v1/shipping-option/","authorableCarousel":"https://api.t-mobile.com/v1/products","getProductData":"https://api.t-mobile.com/v1/products","defaultCartUrl":"https://api.t-mobile.com/commerce/carts/raptor/default","createDefaultPlan":"https://api.t-mobile.com/commerce/lines/raptor/form","getDefaultPlans":"https://api.t-mobile.com/v1/carts/{{cartID}}/plan-configurations","getPersonalInfoUrl":"https://api.t-mobile.com/commerce/profiles/raptor/default","simKitDetails":"https://api.t-mobile.com/raptor/v1/productDetails/i-817CD5BB8FDE4D11B36B85710ED571F1","simKitDetailsV2":"https://api.t-mobile.com/v2/products/i-21225F913860490989C4738E867119BB","addToLine":"https://api.t-mobile.com/carts/v1/item/addToLine?&mock=true","addOneServiceToLine":"https://api.t-mobile.com/carts/v1/item/services/addToLine?mock=true","duplicateLine":"https://api.t-mobile.com/v1/carts/{{cartID}}/lineofservices/{{lineID}}?duplicate=true","removeLine":"https://api.t-mobile.com/v1/carts/{{cartID}}/lineofservices/{{lineID}}","newAuthorization":"https://api.t-mobile.com/oauth/v1/access","addNewLine":"https://api.t-mobile.com/v1/carts/{{cartID}}/lineofservices","getDefaultCart":"https://api.t-mobile.com/v1/carts","getFullCart":"https://api.t-mobile.com/v1/carts/{{cartID}}","getFullCheckout":"https://api.t-mobile.com/v1/carts/{{cartID}}/checkout","removeAccessoryFromCart":"https://api.t-mobile.com/v1/carts/","addOrEditToLine":"https://api.t-mobile.com/v1/carts/{{cartID}}/lineofservices/{{lineID}}/device","addAccessoryToCart":"https://api.t-mobile.com/v1/carts/","applyPromoCode":"https://api.t-mobile.com/v1/carts/{{cartID}}/promotions","removePromoCode":"https://api.t-mobile.com/v1/carts/{{cartID}}/promotions/{{promoCode}}","getServices":"https://api.t-mobile.com/v1/carts/{{cartID}}/lineofservices/{{lineID}}/services","bundleService":"https://api.t-mobile.com/v1/carts/{{cartID}}/lineofservices/{{lineID}}/services/bundle","addServiceToLine":"https://api.t-mobile.com/v1/carts/{{cartID}}/lineofservices/{{lineID}}/services","compatibleAccessory":"https://api.t-mobile.com/raptor/v1/search-promote/?type=browse&pt=Accessory&facets=true","removeDevice":"https://api.t-mobile.com/v1/carts/{{cartID}}/lineofservices/{{lineID}}/device/{{deviceID}}","SSKDataUrl":"https://api.t-mobile.com/raptor/v1/productDetails/i-817CD5BB8FDE4D11B36B85710ED571F1","SSKDataUrlV2":"https://api.t-mobile.com/v2/products/i-21225F913860490989C4738E867119BB","cartPreview":"https://api.t-mobile.com/v1/carts/{{cartID}}/preview","searchOptions":"/srvspub/cellPhonesFilterRetrieval","mailServiceUrl":"/bin/getSendEmail","deviceList":"https://www.t-mobile.com/content/dam/tmo/compatibility_cheker_data/web13525-phone_list_data_10202016.json","carrierList":"https://www.t-mobile.com/content/dam/tmo/compatibility_cheker_data/carrier_list_data.json","authoredRedirectURLUpdate":"/srvspub/authoredRedirectURLUpdate?","authoredRedirectUrlJson":"/srvspub/authoredRedirectUrlJson","chatFuelPostOrderConfirmation":"https://api.chatfuel.com/bots/58f78e67e4b0cd816d87954b/users/{{fbId}}/send","saveCart":"https://api.t-mobile.com/v1/cartregistry","loadCart":"https://api.t-mobile.com/v1/carts/{{cartID}}/clone","selligentServletUrl":"/bin/services/selligent","selligentGenericServletUrl":"/bin/services/marketing/selligent","zipWhipAccessToken":"https://core.saas.api.t-mobile.com/v1/oauth2/accesstoken?grant_type=client_credentials","zipWhip":"https://api.t-mobile.com/zipwhip/v1/messages","getSitemapData":"/config/sitemap.{{page}}.json","nonProdBrowseHeader":false,"isV2AccessTokenEnabled":true,"isV2AccessTokenDisabled":true,"isJWTAccessTokenEnabled":true,"createLeadRetailCart":"https://api.t-mobile.com/customer-interaction/v1/create-lead","saveLeadRetailCart":"https://api.t-mobile.com/customer-interaction/v1/save-lead-cart","VIP_AAL_Script":"https://d33wwcok8lortz.cloudfront.net/js/3290/12022/irv3.js","impactRadiusScript":"https://t-mobile.7eer.net/{{tag}}/?irchannel={{channelId}}&cid=3290&custid={{custId}}&oid={{orderId}}","marketingOptOutApi":"https://core.saas.api.t-mobile.com/eai/v1/customer-profiles/profiles","ibaServlet":"/srvspub/iba","businessILEmailVerification":"https://api.t-mobile.com/dnd/v1/email-verification-status/{{id}}","inventoryVisibilityAPI":"https://core.saas.api.t-mobile.com/supplychain/inventoryavailability/v1/inventory/search/inventory-details-view","invoca":"https://solutions.invocacdn.com/js/pnapi_integration-latest.min.js","ibaOptOut":"https://core.saas.api.t-mobile.com/eai/v1/customer-profiles/preferences/{user-id}","JWToken":"https://core.saas.api.t-mobile.com/oauth2/v4/tokens","layer3Lookup":"https://www.layer3tv.com/api/lineup/check?zipcode=","hapiAccessToken":"https://join.t-mobile.com/api/access_token","byodChecker":"https://join.t-mobile.com/api/get_byod_check","blueCore":"https://www.bluecore.com/api/track/purchase_pixel?token=t_mobile","smpd":"https://secure.message.t-mobile.com/msg/v1/static-assets/smpd-tag.js"})
+
+      .constant('apiURLsV2', {"getDefaultCart":"https://api.t-mobile.com/v2/carts/","addNewLine":"https://api.t-mobile.com/v2/carts/{{cartID}}/lines","removeLine":"https://api.t-mobile.com/v2/carts/{{cartID}}/lines/{{lineID}}","getDefaultPlans":"https://api.t-mobile.com/v2/carts/{{cartID}}/plan-configurations","deletePlan":"https://api.t-mobile.com/v2/carts/{{cartID}}/lines/{{lineID}}/plans/{{planID}}","addServiceToLine":"https://api.t-mobile.com/v2/carts/{{cartID}}/lines/{{lineID}}/services/bundle","getServices":"https://api.t-mobile.com/v2/carts/{{cartID}}/lines/{{lineID}}/services","bundleService":"https://api.t-mobile.com/v2/carts/{{cartID}}/lines/{{lineID}}/services","addTradeIn":"https://api.t-mobile.com/v2/carts/{{cartID}}/lines/{{lineID}}/trade-ins","duplicateLine":"https://api.t-mobile.com/v2/carts/{{cartID}}/lines/{{lineID}}?duplicate=true","removeTradeIn":"https://api.t-mobile.com/v2/carts/{{cartID}}/lines/{{lineID}}/trade-ins/{{tradeInID}}","addOrEditToLine":"https://api.t-mobile.com/v2/carts/{{cartID}}/lines/{{lineID}}/device","getFullCart":"https://api.t-mobile.com/v2/carts/{{cartID}}","addAccessoryToCart":"https://api.t-mobile.com/v2/carts/{{cartID}}/accessories","removeAccessoryFromCart":"https://api.t-mobile.com/v2/carts/{{cartID}}/accessories/{{accessoryID}}","editAccessoryInCart":"https://api.t-mobile.com/v2/carts/{{cartID}}/accessories/{{accessoryID}}","getFullCheckout":"https://api.t-mobile.com/v2/carts/{{cartID}}","tradeInIMEI":"https://core.saas.api.t-mobile.com/tradein/v2/tradeinquotes/eligibility","tradeInDevices":"https://core.saas.api.t-mobile.com/tradein/v2/tradeinquotes/devices","browsePromos":"https://api.t-mobile.com/v2/promotions/browse","applyPromoCode":"https://api.t-mobile.com/v2/carts/{{cartID}}/promotions","removePromoCode":"https://api.t-mobile.com/v2/carts/{{cartID}}/promotions/{{promoCode}}","saveCart":"https://api.t-mobile.com/v2/carts/registry","loadCart":"https://api.t-mobile.com/v2/carts/{{cartID}}/clone","getSkuPrices":"https://api.t-mobile.com/v1/carts/{{cartID}}","getSkuPricesV2Cart":"https://api.t-mobile.com/v2/carts/{{cartID}}","createAuditRecordsUrl":"https://api.t-mobile.com/v2/carts/{{cartID}}/audit-records","financingAmount":"https://api.t-mobile.com/v2/carts/{{cartID}}/cartTotals","tradeInCache":"/srvspub/tradeInData.json","compatibleDevicesUrl":"https://api.t-mobile.com/v2/products/{{offerID}}/relationships","updateProfile":"https://api.t-mobile.com/v2/profiles/{{profileID}}","getProfileId":"https://api.t-mobile.com/v2/profiles","cartPreview":"https://api.t-mobile.com/v2/carts/{{cartID}}/preview","businessILEmailVerification":"https://api.t-mobile.com/dnd/v1/email-verification-status/{{id}}","inventoryVisibilityAPI":"https://core.saas.api.t-mobile.com/supplychain/inventoryavailability/v1/inventory/search/inventory-details-view","roamingMasterListUrl":"https://core.saas.api.t-mobile.com/products/v3/international-roaming-regions?region-type=Country-Destination","roamingDetailListUrl":"https://core.saas.api.t-mobile.com/products/v3/international-roaming-regions/","cruiseMasterListUrl":"https://core.saas.api.t-mobile.com/products/v3/international-roaming-regions?region-type=Maritime-Service","cruiseDetailListUrl":"https://core.saas.api.t-mobile.com/products/v3/international-roaming-regions/","deviceMasterListUrl":"https://core.saas.api.t-mobile.com/products/v3/devices/device-model-names","deviceDetailListUrl":"https://core.saas.api.t-mobile.com/products/v3/international-roaming-regions/{{regionCode}}/compatible-device-models/{{deviceModelSpecId}}","getPublicKey":"http://tstsvrt002.unix.gsm1900.org:5094/accounts/v3/publickey","postPaymentUrl":"https://api.t-mobile.com/commerce/v3/checkouts/{{cartID}}/payments","getEligiblePlans":"https://api.t-mobile.com/v2/carts/{{cartID}}/lines/{{lineID}}/eligibleplans","postPlanToLine":"https://api.t-mobile.com/v2/carts/{{cartID}}/lines/{{lineID}}/plans","patchPlanToLine":"https://api.t-mobile.com/v2/carts/{{cartID}}/lines/{{lineID}}/plans/{{planID}}","newInternationalCalling":"https://core.saas.api.t-mobile.com/products/v3/international-calling-regions","portEligibility":"https://core.saas.api.t-mobile.com/port/v1/port-in/eligibility"})
+
+      .constant('DEFAULT_FEATURE_TOGGLE_SETTINGS', {"config":{"enableDates":true,"hosts":{"localhost":{"enableAll":false,"disableAll":false}}},"toggles":{"universalDeviceCarousal":false,"popularAccessoryCarousal":false,"checkCompatibility":false,"checkIMEI":false,"promoCode":false,"storePayment":true,"scheduleCallback":false,"rylothCartFlag":false,"SaveLoadCartFlag":false}})
+
+      .constant('apiURLsV3', {"getDefaultCart":"https://api.t-mobile.com/commerce/v3/carts/","addNewLine":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/lines","removeLine":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/lines/{{lineID}}","getDefaultPlans":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/plan-configurations","deletePlan":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/lines/{{lineID}}/plans/{{planID}}","addServiceToLine":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/lines/{{lineID}}/services","getServices":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/lines/{{lineID}}/services","bundleService":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/lines/{{lineID}}/services","addTradeIn":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/lines/{{lineID}}/trade-ins","addAccessoryToCart":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/accessories","removeAccessoryFromCart":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/accessories/{{accessoryID}}","editAccessoryInCart":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/accessories/{{accessoryID}}","duplicateLine":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/lines/{{lineID}}/clone","removeTradeIn":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/lines/{{lineID}}/trade-ins/{{tradeInID}}","addOrEditToLine":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/lines/{{lineID}}/device","getFullCart":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}","getFullCheckout":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}","tradeInIMEI":"https://core.saas.api.t-mobile.com/tradein/v2/tradeinquotes/eligibility","tradeInDevices":"https://api.t-mobile.com/tradein/v3/tradeinquotes/devices","browsePromos":"https://api.t-mobile.com/commerce/v3/promotions/browse","applyPromoCode":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/promotions","removePromoCode":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/promotions/{{promoCode}}","saveCart":"https://api.t-mobile.com/commerce/v3/carts/registry","loadCart":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/clone","getSkuPrices":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}","getSkuPricesV3Cart":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}","createAuditRecordsUrl":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/audit-records","financingAmount":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/cartTotals","tradeInCache":"/srvspub/tradeInData.json","compatibleDevicesUrl":"https://api.t-mobile.com/commerce/v3/products/{{offerID}}/relationships","updateProfile":"https://api.t-mobile.com/commerce/v3/profiles/{{profileID}}","getProfileId":"https://api.t-mobile.com/commerce/v3/profiles","cartPreview":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/preview","businessILEmailVerification":"https://emailverificationprocessor-qlab02-nmq.test.px-npe01.cf.t-mobile.com/dnd/v1/email-verification-status/{{id}}","getEligiblePlans":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/lines/{{lineID}}/eligible-plans","postPlanToLine":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/lines/{{lineID}}/plans","inventoryVisibilityAPI":"https://core.saas.api.t-mobile.com/supplychain/inventoryavailability/v1/inventory/search/inventory-details-view","roamingMasterListUrl":"https://core.saas.api.t-mobile.com/products/v3/international-roaming-regions?region-type=Country-Destination","roamingDetailListUrl":"https://core.saas.api.t-mobile.com/products/v3/international-roaming-regions/","cruiseMasterListUrl":"https://core.saas.api.t-mobile.com/products/v3/international-roaming-regions?region-type=Maritime-Service","cruiseDetailListUrl":"https://core.saas.api.t-mobile.com/products/v3/international-roaming-regions/","deviceMasterListUrl":"https://core.saas.api.t-mobile.com/products/v3/devices/device-model-names","deviceDetailListUrl":"https://core.saas.api.t-mobile.com/products/v3/international-roaming-regions/{{regionCode}}/compatible-device-models/{{deviceModelSpecId}}","getCreditProfile":"https://api.t-mobile.com/commerce/v3/profiles/{{profileID}}/credit-profiles/{{creditProfileID}}","getQuotes":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/quotes","eosCreditCheck":"https://api.t-mobile.com/credit-screen/v1/identity/screen","getCartV3":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}","createCreditProfiles":"https://api.t-mobile.com/commerce/v3/profiles/{{profileID}}/credit-profiles/","getAccounts":"https://api.t-mobile.com/commerce/v3/profiles/{{profileId}}/accounts","createAccounts":"https://api.t-mobile.com/commerce/v3/profiles/{{profileId}}/accounts","updateAccount":"https://api.t-mobile.com/commerce/v3/profiles/{{profileID}}/accounts/{{accountID}}","getPublicKeyForPayment":"https://api.t-mobile.com/shop/v1/auth/publickey?keyType=PAYMENT","postPaymentUrl":"https://api.t-mobile.com/commerce/v3/checkouts/{{cartID}}/payments","shippingOptionsUrl":"https://api.t-mobile.com/commerce/v3/checkouts/{{cartID}}/shipping-options","postShippingOptionsUrl":"https://api.t-mobile.com/commerce/v3/checkouts/{{cartID}}/shipping-options","getAddressList":"https://api.t-mobile.com/commerce/v3/profiles/{{profileID}}/addresses","deleteAddressAssociation":"https://api.t-mobile.com/commerce/v3/profiles/{{profileID}}/addresses/{{addressId}}/association/{{associationId}}","deleteAddress":"https://api.t-mobile.com/commerce/v3/profiles/{{profileID}}/addresses/{{addressId}}","postProfileAddress":"https://api.t-mobile.com/commerce/v3/profiles/{{profileID}}/addresses","patchProfileAddress":"https://api.t-mobile.com/commerce/v3/profiles/{{profileID}}/addresses/{{addressId}}","submitOrderUrl":"https://api.t-mobile.com/commerce/v3/orders","verifyIdentity":"https://api.t-mobile.com/credit-screen/v1/identity/verify","patchPlanToLine":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/lines/{{lineID}}/plans/{{planID}}","cartPlansUrl":"https://api.t-mobile.com/commerce/v3/carts/{{cartID}}/plans","getPublicKeyForVerifyIdentity":"https://api.t-mobile.com/shop/v1/auth/publickey?keyType=SHOP","getPublicKeyForCreditCheck":"https://api.t-mobile.com/shop/v1/auth/publickey?keyType=SHOP","initiateConversation":"https://www.t-mobile.com/shop/api/lexis-nexis/conversations","continueConversation":"https://www.t-mobile.com/shop/api/lexis-nexis/conversations/continue","financeEstimates":"https://api.t-mobile.com/commerce/v3/checkouts/{{cartID}}/finance-estimates","eosCreditCheckV2":"https://api.t-mobile.com/credit-screen/v2/identity/screen","verifyIdentityV2":"https://api.t-mobile.com/credit-screen/v2/identity/verify","bvEncryptionKey":"https://www.t-mobile.com/shop/api/bazaarvoice/publickey","unoCart":"https://www.t-mobile.com/cart"})
+      ;
+
+})(window.angular);
+
+var buildTime ="Monday, October 11, 2021, 12:22:51 AM PDT"; console.log("Application is deployed at:" + buildTime)
